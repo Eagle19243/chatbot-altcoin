@@ -1,0 +1,12 @@
+body {
+    background: #E2E2E2;
+}
+.support-bot {
+    position: absolute;
+    bottom: 30px;
+    right: 10px;
+    width: 350px;
+    height: 430px;
+    border-radius: 10px;
+    border-width: 0px;
+}
