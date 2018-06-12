@@ -46,7 +46,7 @@
             <div class="clearfix"></div>
             <div class="b-agent-demo_input">
                 <form id="agentDemoForm">
-                    <input type="text" name="q" autocomplete="off" 
+                    <input type="text" name="q" autocomplete="off"
                         id="query" placeholder="Ask something...">
                     <i class="b-agent-demo_input-microphone material-icons-extended" 
                         id="mic" style="display: none;">
