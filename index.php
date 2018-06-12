@@ -49,7 +49,7 @@
                     <input type="text" name="q" autocomplete="off" 
                         id="query" placeholder="Ask something...">
                     <i class="b-agent-demo_input-microphone material-icons-extended" 
-                        id="mic" style="display: block;">
+                        id="mic" style="display: none;">
                         mic
                     </i>
                 </form>
