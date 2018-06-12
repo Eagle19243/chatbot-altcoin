@@ -126,7 +126,7 @@ function getButtonContent(val){
 }
 
 function getLinkContent(val){
-    var content = '<a href="' + val + ' class="msg-link" target="_blank">' + val + '</a>';
+    var content = '<a href="' + val + '" class="msg-link" target="_blank">' + val + '</a>';
     return content;
 }
 
