@@ -285,4 +285,7 @@ form {
 .clearfix {
     clear: both;
 }
+.msg-text {
+    margin-bottom: 10px;
+}
   

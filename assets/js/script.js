@@ -1,1 +1,144 @@
-var BaseURL="https://api.dialogflow.com/v1/query?v=20170712&",AccessToken="5d8696da838744a7a30ee2912c790c38";function getSession(){var e=null;if(sessionStorage.getItem("session"))e=sessionStorage.getItem("session");else{var t=Math.floor(1e3*Math.random()+1),s=Date.now(),n=new Date,o=new Array(7);o[0]="Sunday",o[1]="Monday",o[2]="Tuesday",o[3]="Wednesday",o[4]="Thursday",o[5]="Friday",o[6]="Saturday";var a=t+o[n.getDay()]+s;sessionStorage.setItem("session",a),e=sessionStorage.getItem("session")}return e}function sendRequest(e){var t=getSession();$.ajax({type:"GET",url:BaseURL+"query="+e+"&lang=en&sessionId="+t,contentType:"application/json",dataType:"json",headers:{Authorization:"Bearer "+AccessToken},success:function(e){processResponse(e)}})}function processResponse(e){e.result.action;e.result.fulfillment.messages&&0!=e.result.fulfillment.messages.length&&(e.result.fulfillment.messages[0].payload?setBotResponse(e.result.fulfillment.messages[0].payload.body):setBotResponse([{type:"text",value:"Sorry, I couldn't get that. Please ask any other question."}]))}function setBotResponse(e){if(0!=e.length){var t='<div class="server-response">';e.forEach(function(e){"text"==e.type?t+=getTextContent(e.value):"button"==e.type?t+=getButtonContent(e.value):"link"==e.type&&(t+=getLinkContent(e.value))}),t+="</div>",$("#result").append(t),scrollToBottomOfResult()}}function getTextContent(e){return'<div class="msg-text">'+e+"</div>"}function getButtonContent(e){return'<span class="msg-btn">'+e+"</span>"}function getLinkContent(e){return'<a href="'+e+'" class="msg-link" target="_blank">'+e+"</a>"}function setUserResponse(e){var t='<div class="user-request">'+e+"</div>";$("#result").append(t)}function scrollToBottomOfResult(){var e=document.getElementById("result");$("#resultWrapper").scrollTop(e.scrollHeight)}$(document).ready(function(){$("#query").on("keyup keypress",function(e){var t=e.keyCode||e.which,s=$(this).val();if(13===t)return""==s||""==$.trim(s)?(e.preventDefault(),!1):(setUserResponse(s),sendRequest(s),scrollToBottomOfResult(),$(this).val(""),e.preventDefault(),!1)}),$(document).on("click",".msg-btn",function(){var e=$(this).text();setUserResponse(e),sendRequest(e),scrollToBottomOfResult()})});
+const BaseURL = "https://api.dialogflow.com/v1/query?v=20170712&";
+const AccessToken = "5d8696da838744a7a30ee2912c790c38";
+
+$(document).ready(function(){
+    $('#query').on('keyup keypress', function(e){
+        var keyCode = e.keyCode || e.which;
+        var text = $(this).val();
+        if (keyCode === 13) {
+			if(text == '' ||  $.trim(text) == '') {
+				e.preventDefault();
+				return false;
+			} else {
+				setUserResponse(text);
+                sendRequest(text);
+                scrollToBottomOfResult();
+                $(this).val("");
+				e.preventDefault();
+				return false;
+			}
+		}
+    });
+
+    $(document).on('click', '.msg-btn', function(){
+        var text = $(this).text();
+		setUserResponse(text);
+        sendRequest(text);
+        scrollToBottomOfResult();
+    });
+});
+
+// ----------- Session Init -------------
+function getSession(){
+    var session = null;
+
+    if (sessionStorage.getItem('session')) {
+        session = sessionStorage.getItem('session');
+    } else {
+        var randomNo = Math.floor((Math.random() * 1000) + 1);
+        // get Timestamp
+        var timestamp = Date.now();
+        // get Day
+        var date = new Date();
+        var weekday = new Array(7);
+        weekday[0] = "Sunday";
+        weekday[1] = "Monday";
+        weekday[2] = "Tuesday";
+        weekday[3] = "Wednesday";
+        weekday[4] = "Thursday";
+        weekday[5] = "Friday";
+        weekday[6] = "Saturday";
+        var day = weekday[date.getDay()];
+        // Join random number+day+timestamp
+        var session_id = randomNo+day+timestamp;
+        // Put the object into storage
+        sessionStorage.setItem('session', session_id);
+        session = sessionStorage.getItem('session');
+    }
+
+    return session;
+}
+
+// ------------ Send Request to DialogFlow-----------
+function sendRequest(text){
+    var sessionId = getSession();
+    
+    $.ajax({
+        type: "GET",
+        url: BaseURL + "query=" + text + "&lang=en&sessionId=" + sessionId,
+        contentType: "application/json",
+        dataType: "json",
+        headers: {
+            "Authorization": "Bearer " + AccessToken
+        },
+        success: function(data) {
+            processResponse(data);
+        }
+    });
+}
+
+// ------------ Process Response from DialogFlow-------------
+function processResponse(data){
+    var action = data.result.action;
+
+    if (!data.result.fulfillment.messages) return;
+    if (data.result.fulfillment.messages.length == 0) return;
+    if (!data.result.fulfillment.messages[0].payload) {
+        setBotResponse([{
+            "type" : "text",
+            "value" : "Sorry, I couldn't get that. Please ask any other question."
+        }]);
+    } else {
+        setBotResponse(data.result.fulfillment.messages[0].payload.body);
+    }
+}
+
+// ------------- Set Bot Response in Result --------------
+function setBotResponse(messages){
+    if (messages.length == 0) return;
+
+    var content = '<div class="server-response">';
+
+    messages.forEach(function(message){
+        if (message.type == "text") {
+            content += getTextContent(message.value);
+        } else if (message.type == "button") {
+            content += getButtonContent(message.value);
+        } else if (message.type == "link") {
+            content += getLinkContent(message.value);
+        }
+    });
+
+    content += '</div>';
+
+    $('#result').append(content);
+    scrollToBottomOfResult();
+}
+
+function getTextContent(val){
+    var content = '<div class="msg-text">' + val + '</div>';
+    return content;
+}
+
+function getButtonContent(val){
+    var content = '<span class="msg-btn">' + val + '</span>';
+    return content;
+}
+
+function getLinkContent(val){
+    var content = '<a href="' + val + '" class="msg-link" target="_blank">' + val + '</a>';
+    return content;
+}
+
+// ------------- Set User Response in Result --------------
+function setUserResponse(val){
+    var content = '<div class="user-request">' + val + '</div>';
+    $('#result').append(content);
+}
+
+//---------------------------------- Scroll to the Bottom of the Result -------------------------------
+function scrollToBottomOfResult() {
+    var terminalResult = document.getElementById('result');
+    $('#resultWrapper').scrollTop(terminalResult.scrollHeight);
+}
+
