@@ -65,7 +65,7 @@ function sendRequest(text){
     
     $.ajax({
         type: "GET",
-        url: BaseURL + "query=" + text + "&lang=en&sessionId=" + sessionId,
+        url: encodeURI(BaseURL + "query=" + text + "&lang=en&sessionId=" + sessionId),
         contentType: "application/json",
         dataType: "json",
         headers: {
